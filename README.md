@@ -33,36 +33,20 @@ Existing privacy coins are **not** designed against this model: they protect the
 
 ## Approach
 
-The architecture is organized around three co-designed layers:
-
-| Layer            | Goal                                                       | Tools we are studying                              |
-| ---------------- | ---------------------------------------------------------- | -------------------------------------------------- |
-| **Cryptography** | Hide amounts, addresses, and the transaction graph.        | Zero-knowledge proofs, ring signatures, commitments. |
-| **Diffusion**    | Prevent timing and topology-based deanonymization of gossip. | Dandelion++-style protocols, batched relays, cover traffic. |
-| **Network**      | Hide IP-level metadata of every node.                      | Mixnets, traffic shaping, decoy traffic.            |
+The architecture is organized around three co-designed layers — **Cryptography** (hiding amounts, addresses and the transaction graph via zero-knowledge proofs, ring signatures and commitments), **Diffusion** (hardening gossip against timing and topology analysis with Dandelion++-style protocols, batched relays and cover traffic) and **Network** (hiding IP-level metadata via mixnets, traffic shaping and decoy traffic).
 
 Unlike previous work that bolts a privacy network (Tor, I2P) onto an existing chain, Ophobia treats network-layer privacy as a **first-class protocol concern**.
 
+A detailed research thesis covering the threat model, architecture and trade-offs will be linked here.
+
 ## Ethical Disclaimer
 
-In May 2024, Alexey Pertsev, developer of Tornado Cash, was sentenced in the Netherlands to 5 years and 4 months in prison for money laundering through the Tornado Cash protocol.
-
-This project is **strictly academic and research-oriented**:
-
-- The full implementation will **not** be released publicly.
-- Safeguards are integrated by design, including:
-  - A blacklist of sanctioned addresses.
-  - Optional compliance mechanisms (e.g. selective disclosure, viewing keys).
-- The goal is to **explore the trade-offs between strong anonymity and regulatory compliance**, not to provide an operational tool for circumvention.
-
-Any publications resulting from this work will follow responsible-disclosure principles and the ethical guidelines of our institution.
+This project is **strictly academic and research-oriented**. The full implementation will **not** be released publicly, safeguards (sanctioned-address blacklist, selective disclosure, viewing keys) are integrated by design, and the goal is to **explore the trade-offs between strong anonymity and regulatory compliance** — not to provide an operational tool for circumvention. Any publications will follow responsible-disclosure principles and the ethical guidelines of our institution.
 
 ## Team
 
-| Name                       | Role                  |
-| -------------------------- | --------------------- |
-| **Yannis Manicord**        | Cryptography Engineer |
-| **Kassim Traoré-Semprez**  | Mixnet Engineer       |
+- [@0x7manny](https://github.com/0x7manny) — Cryptography Engineer
+- [@0x11semprez](https://github.com/0x11semprez) — Mixnet Engineer
 
 ## Status
 
