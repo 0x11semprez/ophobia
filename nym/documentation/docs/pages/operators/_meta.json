@@ -1,0 +1,21 @@
+{
+  "introduction": "Introduction",
+  "changelog": "Changelog",
+  "release-cycle": "Release Cycle",
+  "variables": "Variables & Parameters",
+  "sandbox": "Sandbox Testnet",
+  "binaries": "Binaries",
+  "nodes": "Nodes & Validators Guides",
+  "orchestration" : "Orchestration",
+  "performance-and-testing": "Performance Measurement",
+  "tools": "Tools",
+  "troubleshooting": "Troubleshooting",
+  "tokenomics": "Tokenomics",
+  "faq": "FAQ",
+  "community-counsel": "Community Counsel",
+  "---": {
+    "type": "separator"
+  },
+  "archive": "Archive",
+  "misc": "Misc."
+}

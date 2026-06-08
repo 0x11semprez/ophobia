@@ -1,0 +1,58 @@
+name: ci-contracts-upload-binaries
+
+on:
+  workflow_dispatch:
+
+env:
+  NETWORK: mainnet
+
+jobs:
+  publish-nym-contracts:
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ arc-linux-latest-dind ]
+
+    runs-on: ${{ matrix.platform }}
+    env:
+      CARGO_TERM_COLOR: always
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Prepare build output directory
+        shell: bash
+        env:
+          OUTPUT_DIR: ci-contract-builds/${{ github.ref_name }}
+        run: |
+          rm -rf ci-contract-builds || true
+          mkdir -p $OUTPUT_DIR
+          echo $OUTPUT_DIR
+
+      - name: Build contracts
+        run: make optimize-contracts
+
+      - name: Check optimized contracts
+        run: make docker-check-contracts
+
+      - name: Prepare build output
+        shell: bash
+        env:
+          OUTPUT_DIR: ci-contract-builds/${{ github.ref_name }}
+        run: |
+          find contracts/artifacts -maxdepth 1 -type f -name '*.wasm' -exec cp {} $OUTPUT_DIR \;
+          # Also include the optimizer-generated checksums if present
+          if [ -f contracts/artifacts/checksums.txt ]; then
+            cp contracts/artifacts/checksums.txt $OUTPUT_DIR
+          fi
+
+      - name: Deploy branch to CI www
+        continue-on-error: true
+        uses: easingthemes/ssh-deploy@main
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.CI_WWW_SSH_PRIVATE_KEY }}
+          ARGS: "-avzr"
+          SOURCE: "ci-contract-builds/"
+          REMOTE_HOST: ${{ secrets.CI_WWW_REMOTE_HOST }}
+          REMOTE_USER: ${{ secrets.CI_WWW_REMOTE_USER }}
+          TARGET: ${{ secrets.CI_WWW_REMOTE_TARGET }}/builds/
+          EXCLUDE: "/dist/, /node_modules/"

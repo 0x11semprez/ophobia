@@ -1,0 +1,53 @@
+name: publish-sdk-npm
+on:
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v5.0.0
+        with:
+          version: 11.1.2
+
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: ${{ vars.REQUIRED_RUSTC_VERSION }}
+          override: true
+          components: rustfmt, clippy
+
+      - name: Install wasm-pack
+        run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+
+      - name: Install wasm-opt
+        run: cargo install wasm-opt
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: "1.24.6"
+
+      - name: Update root CA certificate bundle
+        run: ./wasm/mix-fetch/go-mix-conn/scripts/update-root-certs.sh
+
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: Build WASM and Typescript SDK
+        run: pnpm sdk:build
+
+      - name: Publish to NPM
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+        run: ./sdk/typescript/scripts/publish.sh

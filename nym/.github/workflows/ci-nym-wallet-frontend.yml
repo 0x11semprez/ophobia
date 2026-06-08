@@ -1,0 +1,45 @@
+name: ci-nym-wallet-frontend
+
+on:
+  pull_request:
+    paths:
+      - 'nym-wallet/**'
+      - '.github/workflows/ci-nym-wallet-frontend.yml'
+
+jobs:
+  types-lint:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v5.0.0
+        with:
+          version: 11.1.2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: nym-wallet/.nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build TypeScript packages (wallet depends on @nymproject/types, etc.)
+        run: pnpm build:types
+
+      - name: Build @nymproject/mui-theme and @nymproject/react (wallet imports subpaths)
+        run: pnpm build:packages
+
+      - name: Typecheck nym-wallet
+        run: pnpm --filter @nymproject/nym-wallet-app tsc
+
+      - name: Lint nym-wallet
+        run: pnpm --filter @nymproject/nym-wallet-app lint
+
+      - name: pnpm audit (workspace lockfile; informational)
+        run: pnpm audit --audit-level critical
+        continue-on-error: true
+
+      - name: Unit tests (nym-wallet)
+        run: pnpm --filter @nymproject/nym-wallet-app test
