@@ -1,4 +1,5 @@
-package main
+// Package network serve to lanch all nodes gave by the user
+package network
 
 type Node struct {
 	ID         int
