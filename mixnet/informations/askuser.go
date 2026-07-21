@@ -13,3 +13,11 @@ func AskNodes(input int) int {
 	}
 	return nodesNumber
 }
+
+func AskBasePort(input int) int {
+	basePort, err := fmt.Scan(&input)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return basePort
+}
