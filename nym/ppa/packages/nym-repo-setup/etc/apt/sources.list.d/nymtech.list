@@ -1,3 +1,0 @@
-# This file is provided by the nym-repo-setup package
-
-deb [arch=amd64 signed-by=/usr/share/keyrings/nymtech.gpg] https://apt.nymtech.net/ jammy main
