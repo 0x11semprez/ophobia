@@ -1,2 +1,0 @@
-gcc -Wall -fPIC -fwrapv -O -fvisibility=hidden
-clang -Wall -fPIC -fwrapv -Qunused-arguments -O -fvisibility=hidden

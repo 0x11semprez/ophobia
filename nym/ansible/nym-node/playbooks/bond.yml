@@ -1,8 +1,0 @@
----
-- name: Nym node bonding / post-installation
-  hosts: all    # or a specific host/group
-  gather_facts: false
-  serial: 1  
-
-  roles:
-    - role: postinstall
