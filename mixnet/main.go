@@ -1,27 +1,30 @@
 package main
 
 import (
-	"crypto/rsa"
+	"mixnet/cryptography"
 	"mixnet/informations"
 	"mixnet/network"
+	"strconv"
 )
 
 func main() {
 	var NodesNumber int
 	var BasePort int
 
-
-	informations.AskNodes(NodesNumber)
-	informations.AskBasePort(BasePort)
+	informations.AskNodes(&NodesNumber)
+	informations.AskBasePort(&BasePort)
 
 	nodes := make([]network.Node, NodesNumber)
 
 	for i := 0; i <= NodesNumber; i++ {
-		i.append(nodes, Node{
-			ID: i,
-			Address: BasePort + i
-			PrivateKey: 
-			PublicKey:
-		})
+		privateKey, publicKey := cryptography.GenerateKeyPair()
+
+		nodes[i] = network.Node{
+			ID:         i,
+			Port:       strconv.Itoa(BasePort + i),
+			PrivateKey: privateKey,
+			PublicKey:  publicKey,
+		}
+
 	}
 }
