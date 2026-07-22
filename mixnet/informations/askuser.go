@@ -6,18 +6,16 @@ import (
 	"log"
 )
 
-func AskNodes(input int) int {
-	nodesNumber, err := fmt.Scan(&input)
+func AskNodes(input *int) {
+	_, err := fmt.Scan(input)
 	if err != nil {
 		log.Fatal(err)
 	}
-	return nodesNumber
 }
 
-func AskBasePort(input int) int {
-	basePort, err := fmt.Scan(&input)
+func AskBasePort(input *int) {
+	_, err := fmt.Scan(input)
 	if err != nil {
 		log.Fatal(err)
 	}
-	return basePort
 }
