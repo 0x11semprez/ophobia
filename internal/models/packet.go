@@ -1,6 +1,8 @@
 // Package models defines the data structures shared across the mixnet.
 package models
 
+import "time"
+
 // Sphinx packet sizes, in bytes. Every packet on the wire has the same size,
 // so a passive observer cannot tell real, loop and drop packets apart.
 const (
@@ -41,3 +43,25 @@ const (
 	// FlagDeliver: this node is the egress provider; store in the client inbox.
 	FlagDeliver
 )
+
+// SphinxHeader is the onion-encrypted part of a packet.
+type SphinxHeader struct {
+	Alpha [GroupElementSize]byte // blinded group element, shared secret source
+	Beta  [RoutingInfoSize]byte  // onion-encrypted routing commands
+	Gamma [MacSize]byte          // MAC over Beta, detects tampering
+}
+
+// SphinxPacket is the fixed-size unit sent between nodes.
+type SphinxPacket struct {
+	Header  SphinxHeader
+	Payload [PayloadSize]byte // delta: layered encryption of the message
+}
+
+// HopInfo is the routing command a node reads from Beta after decryption.
+// The sender samples Delay from Exp(1/MeanDelay) for each hop (Poisson mixing).
+type HopInfo struct {
+	Flag    RoutingFlag
+	NextHop NodeID // with FlagDeliver: the client that owns the inbox
+	Delay   time.Duration
+	NextMac [MacSize]byte
+}
