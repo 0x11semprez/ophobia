@@ -1,6 +1,12 @@
 # Ophobia
 
-> A research project on a privacy-first blockchain, designed from the ground up to resist a global passive network adversary.
+> A research project on a mixnet designed from the ground up to resist a global passive network adversary.
+
+## Project History
+
+Ophobia started as a much broader effort: a **privacy-first blockchain** co-designing the cryptographic, diffusion and network layers in one architecture. After scoping the work, we decided to **drop the blockchain and focus only on the mixnet**, the network layer that hides IP-level metadata. That layer is where existing privacy coins are weakest, and it is useful on its own, independently of any ledger.
+
+The sections below keep the original motivation, because the research question and threat model still drive the design of the mixnet.
 
 ## Research Question
 
@@ -48,6 +54,10 @@ This project is **strictly academic and research-oriented**. The full implementa
 - [@0x7manny](https://github.com/0x7manny) — Cryptography Engineer
 - [@0x11semprez](https://github.com/0x11semprez) — Mixnet Engineer
 
+## Repository Layout
+
+- `src/` — Go source code of the mixnet (`cryptography/`, `network/`, `informations/`, `main.go`).
+
 ## Status
 
-Early-stage research. This repository currently hosts the project's documentation and research notes; no production code is published here.
+Early-stage research. Scope is now **the mixnet only**; the blockchain, cryptographic ledger and diffusion layers are out of scope.
