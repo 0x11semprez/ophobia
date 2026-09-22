@@ -56,7 +56,9 @@ This project is **strictly academic and research-oriented**. The full implementa
 
 ## Repository Layout
 
-- `src/` — Go source code of the mixnet (`cryptography/`, `network/`, `informations/`, `main.go`).
+- `cmd/mixnet/` — entry point (`main.go`).
+- `internal/` — private packages (`cryptography/`, `network/`, `informations/`).
+- `tests/` — tests.
 
 ## Status
 

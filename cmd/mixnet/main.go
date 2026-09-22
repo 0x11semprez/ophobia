@@ -1,9 +1,9 @@
 package main
 
 import (
-	"mixnet/cryptography"
-	"mixnet/informations"
-	"mixnet/network"
+	"mixnet/internal/cryptography"
+	"mixnet/internal/informations"
+	"mixnet/internal/network"
 	"strconv"
 )
 
