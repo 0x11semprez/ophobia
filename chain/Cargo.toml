@@ -1,0 +1,16 @@
+[package]
+name = "ophobia-chain"
+version = "0.1.0"
+edition = "2024"
+description = "Confidential ledger for ophobia, transported over the mixnet"
+publish = false
+
+[dependencies]
+bulletproofs = "5"
+curve25519-dalek = { version = "4", features = ["rand_core", "digest"] }
+merlin = "3"
+rand = "0.8"
+serde = { version = "1", features = ["derive"] }
+bincode = "1"
+sha2 = "0.10"
+thiserror = "2"

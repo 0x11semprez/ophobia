@@ -1,0 +1,58 @@
+name: Rust CI
+
+on:
+  push:
+    branches: [main]
+    paths: ["chain/**", ".github/workflows/rust.yaml"]
+  pull_request:
+    branches: [main]
+    paths: ["chain/**", ".github/workflows/rust.yaml"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: chain
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    steps:
+      - run: pacman -Syu --noconfirm git gcc rust
+      - uses: actions/checkout@v5
+      - run: cargo fmt --check
+      - run: cargo clippy --locked --all-targets -- -D warnings
+
+  test:
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    steps:
+      - run: pacman -Syu --noconfirm git gcc rust
+      - uses: actions/checkout@v5
+      - run: cargo test --locked
+
+  security:
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    steps:
+      - run: pacman -Syu --noconfirm git gcc rust cargo-audit
+      - uses: actions/checkout@v5
+      - run: cargo audit
+
+  build:
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    needs: [lint, test, security]
+    steps:
+      - run: pacman -Syu --noconfirm git gcc rust
+      - uses: actions/checkout@v5
+      - run: cargo build --locked --release
