@@ -11,6 +11,8 @@ pub struct Output {
     pub one_time_key: [u8; 32],
     /// Ephemeral public key the recipient uses to find the output.
     pub ephemeral_key: [u8; 32],
+    /// Amount masked with the stealth shared secret, readable only by the recipient.
+    pub encrypted_amount: [u8; 8],
     /// Proves 0 <= amount < 2^64.
     pub range_proof: Vec<u8>,
 }
