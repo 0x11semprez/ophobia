@@ -86,8 +86,13 @@ func newNodeInfo(conn *net.UDPConn) (models.NodeInfo, *x25519.PrivateKey, error)
 	}, privateKey, nil
 }
 
-func closeAll(conns []*net.UDPConn) {
+func closeAll(conns []*net.UDPConn) error {
 	for _, conn := range conns {
-		conn.Close()
+		err := conn.Close()
+		if err != nil {
+			return fmt.Errorf("We can't close all", err)
+		}
 	}
+
+	return nil
 }
