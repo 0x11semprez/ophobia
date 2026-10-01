@@ -21,10 +21,7 @@ type MixConfig struct {
 	MeanDelay time.Duration
 	LoopRate  float64
 
-	// Handle processes each well-formed packet a mixnode receives.
-	// Sphinx unwrapping plugs in here. Handle runs on the read loop, so it
-	// must not block: schedule the per-hop delay elsewhere.
-	// A nil Handle drops every packet.
+	// Handle processes each packet on the read loop, must not block; nil drops all.
 	Handle func(m *models.Mixnode, conn *net.UDPConn, p *models.SphinxPacket)
 }
 

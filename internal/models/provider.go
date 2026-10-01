@@ -7,8 +7,6 @@ import (
 )
 
 // Provider is the entry and exit point of the mixnet for its clients.
-// It forwards client packets into the first mix layer, and stores
-// packets received for its clients until they pull them.
 type Provider struct {
 	NodeInfo
 	PrivateKey *x25519.PrivateKey
@@ -20,7 +18,6 @@ type Provider struct {
 	LoopRate float64
 
 	// PullSize is the fixed number of messages returned per pull.
-	// The provider pads with dummy messages, so the count leaks nothing.
 	PullSize int
 
 	// Inboxes maps each registered client to its stored messages.

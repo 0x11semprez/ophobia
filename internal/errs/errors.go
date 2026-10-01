@@ -1,6 +1,4 @@
-// Package errs defines the sentinel errors of the mixnet.
-// Call sites wrap them with fmt.Errorf("%w", ...) to add context,
-// so callers can match them with errors.Is.
+// Package errs defines the mixnet sentinel errors, matched with errors.Is.
 package errs
 
 import "errors"

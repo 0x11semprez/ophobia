@@ -9,7 +9,6 @@ const NodeIDSize = x25519.PointSize
 type NodeID [NodeIDSize]byte
 
 // NodeInfo is the public directory entry of a node.
-// Clients use it to build paths and derive per-hop shared secrets.
 type NodeInfo struct {
 	ID        NodeID
 	Address   string // host:port, UDP

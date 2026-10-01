@@ -1,7 +1,4 @@
 // Package poissonmix provides the Poisson timing of Loopix cover traffic.
-// Each node emits packets at exponentially distributed intervals, so its
-// output is a Poisson process that a passive observer cannot distinguish
-// from any other node's. This hides when a real message is actually sent.
 package poissonmix
 
 import (

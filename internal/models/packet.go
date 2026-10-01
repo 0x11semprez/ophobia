@@ -3,8 +3,7 @@ package models
 
 import "time"
 
-// Sphinx packet sizes, in bytes. Every packet on the wire has the same size,
-// so a passive observer cannot tell real, loop and drop packets apart.
+// Sphinx packet sizes in bytes; every packet on the wire has the same size.
 const (
 	GroupElementSize = 32 // alpha: x25519 point, re-blinded at each hop
 	MacSize          = 16 // gamma: truncated HMAC-SHA256 over beta
@@ -22,7 +21,6 @@ const (
 )
 
 // PacketType tells the final recipient what to do with a packet.
-// It is only readable after the last layer is removed, never on the wire.
 type PacketType uint8
 
 const (
@@ -58,7 +56,6 @@ type SphinxPacket struct {
 }
 
 // HopInfo is the routing command a node reads from Beta after decryption.
-// The sender samples Delay from Exp(1/MeanDelay) for each hop (Poisson mixing).
 type HopInfo struct {
 	Flag    RoutingFlag
 	NextHop NodeID // with FlagDeliver: the client that owns the inbox

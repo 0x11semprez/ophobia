@@ -20,10 +20,7 @@ type ProviderConfig struct {
 	LoopRate  float64
 	PullSize  int
 
-	// Handle processes each well-formed packet a provider receives:
-	// forward client packets to layer 0, or store them in a client inbox.
-	// Handle runs on the read loop, so it must not block.
-	// A nil Handle drops every packet.
+	// Handle processes each packet on the read loop, must not block; nil drops all.
 	Handle func(p *models.Provider, conn *net.UDPConn, packet *models.SphinxPacket)
 }
 
