@@ -39,8 +39,7 @@ func (n *MixNetwork) Wait() {
 	n.wg.Wait()
 }
 
-// LaunchMixNodes creates Layers*PerLayer mixnodes, binds one UDP socket per
-// mixnode, and serves each one in its own goroutine until ctx is cancelled.
+// LaunchMixNodes binds one UDP socket per mixnode and serves each in its own goroutine until ctx is cancelled.
 func LaunchMixNodes(ctx context.Context, cfg MixConfig) (*MixNetwork, error) {
 	if cfg.Layers <= 0 || cfg.PerLayer <= 0 {
 		return nil, fmt.Errorf("%w: %d layers x %d mixnodes", errs.ErrInvalidTopology, cfg.Layers, cfg.PerLayer)

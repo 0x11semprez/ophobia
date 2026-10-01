@@ -38,8 +38,7 @@ func (n *ProviderNetwork) Wait() {
 	n.wg.Wait()
 }
 
-// LaunchProviders creates Count providers, binds one UDP socket per provider,
-// and serves each one in its own goroutine until ctx is cancelled.
+// LaunchProviders binds one UDP socket per provider and serves each in its own goroutine until ctx is cancelled.
 func LaunchProviders(ctx context.Context, cfg ProviderConfig) (*ProviderNetwork, error) {
 	if cfg.Count <= 0 {
 		return nil, fmt.Errorf("%w: %d", errs.ErrInvalidProviderCount, cfg.Count)
@@ -65,9 +64,7 @@ func LaunchProviders(ctx context.Context, cfg ProviderConfig) (*ProviderNetwork,
 			PullSize:   cfg.PullSize,
 			Inboxes:    make(map[models.NodeID]*models.Inbox),
 		}
-		// Give the provider its own inbox, keyed by its node ID. Its loop
-		// cover traffic returns to it, and lands here, so it can tell the
-		// network is carrying its fake packets.
+		// Give the provider its own inbox so its loop cover traffic has somewhere to land.
 		provider.Inboxes[provider.ID] = &models.Inbox{}
 		network.Providers[i] = provider
 	}

@@ -15,8 +15,7 @@ import (
 	"mixnet/internal/models"
 )
 
-// listenAll binds count UDP sockets on consecutive ports from basePort.
-// If one socket fails to bind, it closes the sockets already open.
+// listenAll binds count consecutive UDP sockets from basePort, closing any it opened if one fails.
 func listenAll(host string, basePort, count int) ([]*net.UDPConn, error) {
 	conns := make([]*net.UDPConn, 0, count)
 	for i := range count {
@@ -39,8 +38,7 @@ func listen(address string) (*net.UDPConn, error) {
 	return net.ListenUDP("udp", udpAddress)
 }
 
-// serve reads packets until ctx is cancelled. Datagrams that are not exactly
-// models.PacketSize bytes are dropped. A nil handle drops every packet.
+// serve reads fixed-size packets until ctx is cancelled, dropping malformed datagrams and, with a nil handle, every packet.
 func serve(ctx context.Context, name string, conn *net.UDPConn, handle func(*models.SphinxPacket)) {
 	stop := context.AfterFunc(ctx, func() { conn.Close() })
 	defer stop()
