@@ -57,7 +57,7 @@ func LaunchProviders(ctx context.Context, cfg ProviderConfig) (*ProviderNetwork,
 			closeAll(conns)
 			return nil, fmt.Errorf("%w: provider %d: %w", errs.ErrProviderInit, i, err)
 		}
-		network.Providers[i] = &models.Provider{
+		provider := &models.Provider{
 			NodeInfo:   info,
 			PrivateKey: privateKey,
 			MeanDelay:  cfg.MeanDelay,
@@ -65,6 +65,11 @@ func LaunchProviders(ctx context.Context, cfg ProviderConfig) (*ProviderNetwork,
 			PullSize:   cfg.PullSize,
 			Inboxes:    make(map[models.NodeID]*models.Inbox),
 		}
+		// Give the provider its own inbox, keyed by its node ID. Its loop
+		// cover traffic returns to it, and lands here, so it can tell the
+		// network is carrying its fake packets.
+		provider.Inboxes[provider.ID] = &models.Inbox{}
+		network.Providers[i] = provider
 	}
 
 	for i, provider := range network.Providers {
