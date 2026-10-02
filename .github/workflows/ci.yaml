@@ -1,0 +1,40 @@
+name: Golang CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch: # manual run: Actions tab > Run workflow
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: 
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: 
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: 
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [lint, test, security]
+    steps:
+      - uses: actions/checkout@v5
+      - run: 
