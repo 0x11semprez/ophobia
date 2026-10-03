@@ -15,6 +15,12 @@ pub enum ChainError {
     UnknownRingMember,
     #[error("malformed point or scalar")]
     Malformed,
+    #[error("invalid ring")]
+    BadRing,
+    #[error("not enough decoy outputs in the ledger")]
+    NotEnoughDecoys,
+    #[error("insufficient funds")]
+    InsufficientFunds,
     #[error("empty transaction")]
     Empty,
     #[error("bad block: {0}")]
