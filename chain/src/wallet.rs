@@ -13,7 +13,7 @@ use crate::crypto::ring::{self, Member};
 use crate::crypto::stealth::{self, Address, Wallet};
 use crate::error::ChainError;
 use crate::ledger::{Ledger, MAX_RING};
-use crate::types::{Hash, Input, Output, Tx};
+use crate::types::{Block, Hash, Input, Output, Tx};
 
 /// An output we can spend.
 #[derive(Clone)]
@@ -81,6 +81,12 @@ impl Account {
                 amount: got.amount,
                 key_image: ring::key_image(&got.secret_key).compress().to_bytes(),
             });
+        }
+    }
+
+    pub fn scan_block(&mut self, block: &Block) {
+        for tx in &block.txs {
+            self.scan_tx(tx);
         }
     }
 

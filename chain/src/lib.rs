@@ -1,6 +1,9 @@
+pub mod chain;
+pub mod consensus;
 pub mod crypto;
 pub mod error;
 pub mod hash;
 pub mod ledger;
+pub mod mempool;
 pub mod types;
 pub mod wallet;
