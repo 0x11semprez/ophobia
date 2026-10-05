@@ -1,6 +1,7 @@
 # Ophobia
 
-> A research project on a mixnet designed from the ground up to resist a global passive network adversary.
+> Ophobia is derived from scopophobia. 
+> Scopophobia is an intense fear of being watched.
 
 ## Project History
 
@@ -18,14 +19,13 @@ Ophobia is a research effort to design a blockchain entirely dedicated to confid
 
 ## Threat Model
 
-We assume a **Global Passive Adversary (GPA)** with the following capabilities:
+Ophobia is designed against **Global Passive Adversary (GPA)** with the following capabilities:
 
 - Observes a significant fraction of internet traffic in real time.
 - Records IP-level metadata, packet timing and peer-to-peer topology.
 - Cannot break standard cryptographic primitives.
 - May correlate on-chain data with off-chain network observations.
 
-Existing privacy coins are **not** designed against this model: they protect the ledger, not the wire.
 
 ## Research Goals
 
@@ -37,13 +37,6 @@ Existing privacy coins are **not** designed against this model: they protect the
 3. **Evaluate** the trade-offs between strong anonymity, latency, throughput and regulatory compliance.
 4. **Explore** optional compliance hooks (selective disclosure, sanction-list filtering) compatible with strong default privacy.
 
-## Approach
-
-The architecture is organized around three co-designed layers: **Cryptography** (hiding amounts, addresses and the transaction graph via zero-knowledge proofs, ring signatures and commitments), **Diffusion** (hardening gossip against timing and topology analysis with Dandelion++-style protocols, batched relays and cover traffic) and **Network** (hiding IP-level metadata via mixnets, traffic shaping and decoy traffic).
-
-Unlike previous work that bolts a privacy network (Tor, I2P) onto an existing chain, Ophobia treats network-layer privacy as a **first-class protocol concern**.
-
-A detailed research thesis covering the threat model, architecture and trade-offs will be linked here.
 
 ## Ethical Disclaimer
 
@@ -53,12 +46,6 @@ This project is **strictly academic and research-oriented**. The full implementa
 
 - [@0x7manny](https://github.com/0x7manny): Cryptography Engineer
 - [@0x11semprez](https://github.com/0x11semprez): Mixnet Engineer
-
-## Repository Layout
-
-- `cmd/mixnet/`: entry point (`main.go`).
-- `internal/`: private packages (`cryptography/`, `network/`, `informations/`).
-- `tests/`: tests.
 
 ## Status
 
