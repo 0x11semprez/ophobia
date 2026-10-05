@@ -4,12 +4,11 @@ package nodes
 import (
 	"context"
 	"fmt"
+	"mixnet/internal/errs"
+	"mixnet/internal/models"
 	"net"
 	"sync"
 	"time"
-
-	"mixnet/internal/errs"
-	"mixnet/internal/models"
 )
 
 // MixConfig describes the local stratified topology to launch.

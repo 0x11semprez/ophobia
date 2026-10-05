@@ -7,18 +7,17 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"mixnet/internal/covertraffic"
+	"mixnet/internal/errs"
+	"mixnet/internal/models"
+	"mixnet/internal/packets"
+	"mixnet/internal/route"
 	"net"
 	"slices"
 	"strconv"
 	"sync"
 	"sync/atomic"
 	"time"
-
-	"mixnet/internal/covertraffic"
-	"mixnet/internal/errs"
-	"mixnet/internal/models"
-	"mixnet/internal/packets"
-	"mixnet/internal/route"
 )
 
 // outboxSize is how many real packets a client can queue before Send refuses more.

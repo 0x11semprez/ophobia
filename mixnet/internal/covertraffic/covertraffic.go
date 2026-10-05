@@ -3,7 +3,6 @@ package covertraffic
 
 import (
 	"context"
-
 	"mixnet/internal/models"
 	"mixnet/internal/packets"
 	"mixnet/internal/poissonmix"

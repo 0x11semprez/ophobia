@@ -3,13 +3,12 @@ package nodes
 import (
 	"errors"
 	"log"
-	"net"
-	"sync/atomic"
-	"time"
-
 	"mixnet/internal/models"
 	"mixnet/internal/packets"
 	"mixnet/internal/route"
+	"net"
+	"sync/atomic"
+	"time"
 )
 
 // Garbage (random cover bytes, tampered packets) peels into nonsense commands, so every

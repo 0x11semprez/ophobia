@@ -4,10 +4,9 @@ package route
 import (
 	"encoding/binary"
 	"math/rand"
+	"mixnet/internal/models"
 	"slices"
 	"time"
-
-	"mixnet/internal/models"
 )
 
 // DropID as the NextHop of a FlagDeliver command marks a drop cover packet, discarded by the egress provider.

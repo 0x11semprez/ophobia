@@ -4,10 +4,9 @@ package poissonmix
 import (
 	"context"
 	"math/rand"
-	"time"
-
 	"mixnet/internal/models"
 	"mixnet/internal/packets"
+	"time"
 )
 
 // ExponentialLaw samples a delay from Exp(lambda), in seconds with mean 1/lambda.

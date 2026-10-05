@@ -3,9 +3,8 @@ package packets
 
 import (
 	"crypto/rand"
-	"net"
-
 	"mixnet/internal/models"
+	"net"
 )
 
 // Encode flattens a Sphinx packet into a models.PacketSize buffer.

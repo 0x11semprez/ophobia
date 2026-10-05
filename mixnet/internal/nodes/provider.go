@@ -3,13 +3,12 @@ package nodes
 import (
 	"context"
 	"fmt"
-	"net"
-	"sync"
-	"time"
-
 	"mixnet/internal/covertraffic"
 	"mixnet/internal/errs"
 	"mixnet/internal/models"
+	"net"
+	"sync"
+	"time"
 )
 
 // ProviderConfig describes the local providers to launch.

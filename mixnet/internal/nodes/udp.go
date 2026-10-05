@@ -5,12 +5,11 @@ import (
 	"crypto/rand"
 	"errors"
 	"log"
+	"mixnet/internal/models"
+	"mixnet/internal/packets"
 	"net"
 
 	"github.com/oasisprotocol/curve25519-voi/primitives/x25519"
-
-	"mixnet/internal/models"
-	"mixnet/internal/packets"
 )
 
 // serve reads fixed-size packets until ctx is cancelled, dropping malformed datagrams and, with a nil handle, every packet.
