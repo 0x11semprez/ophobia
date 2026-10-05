@@ -63,13 +63,16 @@ func main() {
 		mixNetwork.Wait()
 		log.Fatal(err)
 	}
-	directory.Store(route.NewDirectory(mixNetwork.Mixnodes, providerNetwork.Providers))
+	dir := route.NewDirectory(mixNetwork.Mixnodes, providerNetwork.Providers)
+	directory.Store(dir)
 
 	running := make([]*nodes.RunningClient, 0, *clients)
 	for i := range *clients {
 		client, err := nodes.LaunchClient(ctx, nodes.ClientConfig{
 			Host:        *host,
 			Provider:    providerNetwork.Providers[i%len(providerNetwork.Providers)],
+			Directory:   dir,
+			MeanDelay:   *meanDelay,
 			PayloadRate: *payloadRate,
 			LoopRate:    *clientLoopRate,
 			DropRate:    *dropRate,

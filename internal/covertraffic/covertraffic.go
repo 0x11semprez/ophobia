@@ -9,26 +9,29 @@ import (
 	"mixnet/internal/poissonmix"
 )
 
+// Factory builds a fresh routed cover packet for each send.
+type Factory func() *models.SphinxPacket
+
 // PayloadStream sends a queued real packet every Exp(rate) interval, or a drop cover packet when outbox is empty.
-func PayloadStream(ctx context.Context, rate float64, outbox <-chan *models.SphinxPacket, send func(*models.SphinxPacket)) {
+func PayloadStream(ctx context.Context, rate float64, outbox <-chan *models.SphinxPacket, drop Factory, send func(*models.SphinxPacket)) {
 	poissonmix.Run(ctx, rate, func() {
 		select {
 		case p := <-outbox:
 			send(p)
 		default:
-			send(packets.Random())
+			send(drop())
 		}
 	})
 }
 
-// LoopStream sends a loop cover packet every Exp(rate) interval; random bytes until Sphinx routes it back to the sender.
-func LoopStream(ctx context.Context, rate float64, send func(*models.SphinxPacket)) {
-	poissonmix.Run(ctx, rate, func() { send(packets.Random()) })
+// LoopStream sends a loop cover packet, routed back to the sender, every Exp(rate) interval.
+func LoopStream(ctx context.Context, rate float64, loop Factory, send func(*models.SphinxPacket)) {
+	poissonmix.Run(ctx, rate, func() { send(loop()) })
 }
 
-// DropStream sends a drop cover packet every Exp(rate) interval; random bytes until Sphinx routes it to a provider.
-func DropStream(ctx context.Context, rate float64, send func(*models.SphinxPacket)) {
-	poissonmix.Run(ctx, rate, func() { send(packets.Random()) })
+// DropStream sends a drop cover packet, discarded by a random provider, every Exp(rate) interval.
+func DropStream(ctx context.Context, rate float64, drop Factory, send func(*models.SphinxPacket)) {
+	poissonmix.Run(ctx, rate, func() { send(drop()) })
 }
 
 // Pad appends random dummy messages until there are size, so every pull has the same size.
