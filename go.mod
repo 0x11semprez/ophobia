@@ -1,6 +1,6 @@
 module mixnet
 
-go 1.26.4
+go 1.26.6
 
 require github.com/oasisprotocol/curve25519-voi v0.0.0-20251114093237-2ab5a27a1729
 
