@@ -102,8 +102,6 @@ impl Account {
     }
 
     /// Builds a transaction paying `amount` to `to`, sending any change back to this account.
-    ///
-    /// Spent outputs stay in the balance until a transaction spending them is scanned.
     pub fn pay(
         &self,
         ledger: &Ledger,

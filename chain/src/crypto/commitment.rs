@@ -21,8 +21,6 @@ pub fn decompress(bytes: &[u8; 32]) -> Result<RistrettoPoint, ChainError> {
 }
 
 /// True when inputs commit to exactly outputs plus the fee.
-///
-/// Fee is committed with a zero blinding factor, so it is public and cannot hide a surplus.
 pub fn balances(pseudo_inputs: &[RistrettoPoint], outputs: &[RistrettoPoint], fee: u64) -> bool {
     let inputs: RistrettoPoint = pseudo_inputs.iter().sum();
     let spent: RistrettoPoint = outputs.iter().sum::<RistrettoPoint>() + commit(fee, &Scalar::ZERO);

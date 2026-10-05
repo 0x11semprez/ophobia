@@ -1,9 +1,4 @@
 //! Linkable ring signature over two rows (MLSAG).
-//!
-//! Row 1 proves the signer knows the secret key of one ring member's one-time key and exposes a
-//! key image, unique per key, so spending the same output twice is detectable. Row 2 proves the
-//! pseudo commitment hides the same amount as that member's commitment.
-
 use curve25519_dalek::constants::RISTRETTO_BASEPOINT_POINT as G;
 use curve25519_dalek::ristretto::RistrettoPoint;
 use curve25519_dalek::scalar::Scalar;
@@ -66,8 +61,7 @@ fn step(
     challenge(message, &l_key, &l_image, &l_amount)
 }
 
-/// Signs as member `real`, whose one-time secret is `secret` and whose commitment differs from `pseudo`
-/// by `z * B_blinding` (z = real blinding - pseudo blinding).
+/// Signs as member `real`, whose one-time secret is `secret` and whose commitment differs from `pseudo` by `z * B_blinding` (z = real blinding - pseudo blinding).
 pub fn sign(
     message: &[u8; 32],
     ring: &[Member],

@@ -9,8 +9,6 @@ use crate::transport::{PeerId, Transport};
 use crate::types::{Block, Tx};
 
 /// A full node: keeps the chain and mempool and gossips transactions and blocks to its peers.
-///
-/// The chain is linear, so a node that misses a block rejects every later one and does not catch up.
 pub struct Node<C: Consensus, T: Transport> {
     pub chain: Chain<C>,
     pub mempool: Mempool,
