@@ -6,10 +6,12 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"sync/atomic"
 	"syscall"
 	"time"
 
 	"mixnet/internal/nodes"
+	"mixnet/internal/route"
 )
 
 func main() {
@@ -31,6 +33,9 @@ func main() {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
+	// Handlers start before the directory exists and drop packets until it is stored.
+	var directory atomic.Pointer[route.Directory]
+
 	mixNetwork, err := nodes.LaunchMixNodes(ctx, nodes.MixConfig{
 		Host:      *host,
 		BasePort:  *mixPort,
@@ -38,6 +43,7 @@ func main() {
 		PerLayer:  *perLayer,
 		MeanDelay: *meanDelay,
 		LoopRate:  *loopRate,
+		Handle:    nodes.RouteMixnode(&directory),
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -50,12 +56,14 @@ func main() {
 		MeanDelay: *meanDelay,
 		LoopRate:  *loopRate,
 		PullSize:  *pullSize,
+		Handle:    nodes.RouteProvider(&directory),
 	})
 	if err != nil {
 		stop()
 		mixNetwork.Wait()
 		log.Fatal(err)
 	}
+	directory.Store(route.NewDirectory(mixNetwork.Mixnodes, providerNetwork.Providers))
 
 	running := make([]*nodes.RunningClient, 0, *clients)
 	for i := range *clients {
