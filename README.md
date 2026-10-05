@@ -1,4 +1,6 @@
-# Ophobia
+<p align="center">
+  <img src="assets/logo.png" alt="Ophobia" width="480">
+</p>
 
 > Ophobia is derived from scopophobia. 
 > Scopophobia is an intense fear of being watched.
