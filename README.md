@@ -2,8 +2,7 @@
   <img src="assets/logo.png" alt="Ophobia" width="480">
 </p>
 
-> Ophobia is derived from scopophobia. 
-> Scopophobia is an intense fear of being watched.
+Ophobia is derived from scopophobia. Scopophobia is an intense fear of being watched.
 
 ## Project History
 
@@ -48,6 +47,10 @@ This project is **strictly academic and research-oriented**. The full implementa
 
 - [@0x7manny](https://github.com/0x7manny): Cryptography Engineer
 - [@0x11semprez](https://github.com/0x11semprez): Mixnet Engineer
+
+## Design
+
+The mixnet prototype is designed after the **Loopix** paper: [*The Loopix Anonymity System*](https://www.usenix.org/conference/usenixsecurity17/technical-sessions/presentation/piotrowska) (Piotrowska, Hayes, Elahi, Meiser, Danezis, USENIX Security 2017). Loopix provides the base architecture: a stratified topology of mix nodes, Poisson-distributed per-hop delays, and cover traffic (loop and drop messages) to resist a global passive adversary.
 
 ## Status
 
