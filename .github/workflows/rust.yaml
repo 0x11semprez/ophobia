@@ -28,6 +28,7 @@ jobs:
     container: archlinux:latest
     steps:
       - run: pacman -Syu --noconfirm git gcc rust
+        working-directory: .
       - uses: actions/checkout@v5
       - run: cargo fmt --check
       - run: cargo clippy --locked --all-targets -- -D warnings
@@ -37,6 +38,7 @@ jobs:
     container: archlinux:latest
     steps:
       - run: pacman -Syu --noconfirm git gcc rust
+        working-directory: .
       - uses: actions/checkout@v5
       - run: cargo test --locked
 
@@ -45,6 +47,7 @@ jobs:
     container: archlinux:latest
     steps:
       - run: pacman -Syu --noconfirm git gcc rust cargo-audit
+        working-directory: .
       - uses: actions/checkout@v5
       - run: cargo audit
 
@@ -54,5 +57,6 @@ jobs:
     needs: [lint, test, security]
     steps:
       - run: pacman -Syu --noconfirm git gcc rust
+        working-directory: .
       - uses: actions/checkout@v5
       - run: cargo build --locked --release

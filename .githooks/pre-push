@@ -2,6 +2,7 @@
 # Runs the CI checks locally and blocks the push if any fails.
 set -e
 echo "pre-push: running CI checks"
+cd "$(git rev-parse --show-toplevel)/mixnet"
 test -z "$(gofmt -l .)" || { echo "pre-push: gofmt needed:"; gofmt -l .; exit 1; }
 go vet ./...
 go test -race ./...
