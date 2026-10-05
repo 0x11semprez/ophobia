@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"mixnet/internal/covertraffic"
 	"mixnet/internal/errs"
 	"mixnet/internal/models"
 )
@@ -62,7 +63,7 @@ func LaunchProviders(ctx context.Context, cfg ProviderConfig) (*ProviderNetwork,
 			Inboxes:    make(map[models.NodeID]*models.Inbox),
 		}
 		// Give the provider its own inbox so its loop cover traffic has somewhere to land.
-		provider.Inboxes[provider.ID] = &models.Inbox{}
+		provider.Register(provider.ID)
 		network.Providers[i] = provider
 	}
 
@@ -77,4 +78,13 @@ func LaunchProviders(ctx context.Context, cfg ProviderConfig) (*ProviderNetwork,
 	}
 
 	return network, nil
+}
+
+// Pull pops up to PullSize messages for client and pads with random dummies, so every pull has the same size.
+func Pull(provider *models.Provider, client models.NodeID) ([][models.PayloadSize]byte, error) {
+	inbox := provider.Inbox(client)
+	if inbox == nil {
+		return nil, fmt.Errorf("%w: %x", errs.ErrUnknownClient, client)
+	}
+	return covertraffic.Pad(inbox.Pop(provider.PullSize), provider.PullSize), nil
 }

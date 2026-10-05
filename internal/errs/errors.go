@@ -10,6 +10,8 @@ var (
 	ErrListen               = errors.New("listen failed")
 	ErrMixnodeInit          = errors.New("mixnode init failed")
 	ErrProviderInit         = errors.New("provider init failed")
+	ErrClientInit           = errors.New("client init failed")
+	ErrUnknownClient        = errors.New("unknown client")
 )
 
 // Backend errors.
