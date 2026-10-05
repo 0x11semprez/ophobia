@@ -2,11 +2,11 @@
   <img src="assets/logo.png" alt="Ophobia" width="480">
 </p>
 
-Ophobia is derived from scopophobia. Scopophobia is an intense fear of being watched.
+ophobia is derived from scopophobia. Scopophobia is an intense fear of being watched.
 
 ## Project History
 
-Ophobia started as a much broader effort: a **privacy-first blockchain** co-designing the cryptographic, diffusion and network layers in one architecture. After scoping the work, we decided to **drop the blockchain and focus only on the mixnet**, the network layer that hides IP-level metadata. That layer is where existing privacy coins are weakest, and it is useful on its own, independently of any ledger.
+ophobia started as a much broader effort: a **privacy-first blockchain** co-designing the cryptographic, diffusion and network layers in one architecture. After scoping the work, we decided to **drop the blockchain and focus only on the mixnet**, the network layer that hides IP-level metadata. That layer is where existing privacy coins are weakest, and it is useful on its own, independently of any ledger.
 
 The sections below keep the original motivation, because the research question and threat model still drive the design of the mixnet.
 
@@ -16,11 +16,11 @@ In a global context where data protection and online anonymity have become strat
 
 Existing privacy coins such as **Monero** and **Zcash** offer robust answers at the *transactional* layer (hiding amounts, addresses and the transaction graph) but leave the **network layer largely exposed**. Faced with a global passive adversary capable of observing a significant fraction of internet traffic simultaneously, metadata analysis (IP addresses, propagation timing, peer topology) is enough to deanonymize a substantial share of transactions, **without breaking the underlying cryptography**.
 
-Ophobia is a research effort to design a blockchain entirely dedicated to confidentiality, **co-designing the cryptographic, diffusion and network layers** within a single unified architecture, built from day one to resist this threat model.
+ophobia is a research effort to design a blockchain entirely dedicated to confidentiality, **co-designing the cryptographic, diffusion and network layers** within a single unified architecture, built from day one to resist this threat model.
 
 ## Threat Model
 
-Ophobia is designed against **Global Passive Adversary (GPA)** with the following capabilities:
+ophobia is designed against **Global Passive Adversary (GPA)** with the following capabilities:
 
 - Observes a significant fraction of internet traffic in real time.
 - Records IP-level metadata, packet timing and peer-to-peer topology.
