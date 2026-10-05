@@ -19,3 +19,9 @@ type Client struct {
 	// DropRate is lambda_D, the rate (packets/s) of client drop cover traffic.
 	DropRate float64
 }
+
+// Payload framing until end-to-end encryption lands: PacketType, big-endian uint16 length, body, zero tail.
+const (
+	MessageHeaderSize = 3
+	MaxMessageSize    = PayloadSize - MessageHeaderSize
+)

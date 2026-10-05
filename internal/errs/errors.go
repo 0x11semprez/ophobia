@@ -12,6 +12,8 @@ var (
 	ErrProviderInit         = errors.New("provider init failed")
 	ErrClientInit           = errors.New("client init failed")
 	ErrUnknownClient        = errors.New("unknown client")
+	ErrMessageTooLarge      = errors.New("message too large")
+	ErrOutboxFull           = errors.New("outbox full")
 )
 
 // Backend errors.
