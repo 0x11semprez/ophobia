@@ -5,5 +5,8 @@ pub mod error;
 pub mod hash;
 pub mod ledger;
 pub mod mempool;
+pub mod message;
+pub mod node;
+pub mod transport;
 pub mod types;
 pub mod wallet;

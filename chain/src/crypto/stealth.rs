@@ -51,7 +51,10 @@ fn mask(shared: &RistrettoPoint, index: u64) -> [u8; 8] {
 
 impl Wallet {
     pub fn generate() -> Self {
-        Self { view: Scalar::random(&mut OsRng), spend: Scalar::random(&mut OsRng) }
+        Self {
+            view: Scalar::random(&mut OsRng),
+            spend: Scalar::random(&mut OsRng),
+        }
     }
 
     pub fn address(&self) -> Address {
@@ -77,10 +80,17 @@ impl Wallet {
         }
         let blinding = hash_to_scalar(b"ophobia/blind", &shared, index);
         let mut amount = [0u8; 8];
-        for (out, (c, m)) in amount.iter_mut().zip(encrypted_amount.iter().zip(mask(&shared, index))) {
+        for (out, (c, m)) in amount
+            .iter_mut()
+            .zip(encrypted_amount.iter().zip(mask(&shared, index)))
+        {
             *out = c ^ m;
         }
-        Some(Received { secret_key, blinding, amount: u64::from_le_bytes(amount) })
+        Some(Received {
+            secret_key,
+            blinding,
+            amount: u64::from_le_bytes(amount),
+        })
     }
 }
 
@@ -92,7 +102,10 @@ pub fn derive(to: &Address, amount: u64, index: u64) -> Result<Stealth, ChainErr
     let shared = r * view;
     let one_time = hash_to_scalar(b"ophobia/key", &shared, index) * G + spend;
     let mut masked = [0u8; 8];
-    for (out, (a, m)) in masked.iter_mut().zip(amount.to_le_bytes().iter().zip(mask(&shared, index))) {
+    for (out, (a, m)) in masked
+        .iter_mut()
+        .zip(amount.to_le_bytes().iter().zip(mask(&shared, index)))
+    {
         *out = a ^ m;
     }
     Ok(Stealth {
@@ -111,7 +124,9 @@ mod tests {
     fn recipient_recovers_amount_and_key() {
         let wallet = Wallet::generate();
         let s = derive(&wallet.address(), 4242, 3).unwrap();
-        let got = wallet.scan(&s.one_time_key, &s.ephemeral_key, &s.encrypted_amount, 3).unwrap();
+        let got = wallet
+            .scan(&s.one_time_key, &s.ephemeral_key, &s.encrypted_amount, 3)
+            .unwrap();
         assert_eq!(got.amount, 4242);
         assert_eq!(got.blinding, s.blinding);
         assert_eq!((got.secret_key * G).compress().to_bytes(), s.one_time_key);
@@ -120,13 +135,21 @@ mod tests {
     #[test]
     fn other_wallet_sees_nothing() {
         let s = derive(&Wallet::generate().address(), 1, 0).unwrap();
-        assert!(Wallet::generate().scan(&s.one_time_key, &s.ephemeral_key, &s.encrypted_amount, 0).is_none());
+        assert!(
+            Wallet::generate()
+                .scan(&s.one_time_key, &s.ephemeral_key, &s.encrypted_amount, 0)
+                .is_none()
+        );
     }
 
     #[test]
     fn index_binds_the_output() {
         let wallet = Wallet::generate();
         let s = derive(&wallet.address(), 1, 0).unwrap();
-        assert!(wallet.scan(&s.one_time_key, &s.ephemeral_key, &s.encrypted_amount, 1).is_none());
+        assert!(
+            wallet
+                .scan(&s.one_time_key, &s.ephemeral_key, &s.encrypted_amount, 1)
+                .is_none()
+        );
     }
 }

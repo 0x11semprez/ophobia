@@ -78,7 +78,11 @@ mod tests {
     use super::*;
 
     fn tx(fee: u64) -> Tx {
-        Tx { inputs: vec![], outputs: vec![], fee }
+        Tx {
+            inputs: vec![],
+            outputs: vec![],
+            fee,
+        }
     }
 
     #[test]

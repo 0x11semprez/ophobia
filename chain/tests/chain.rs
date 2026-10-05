@@ -1,4 +1,4 @@
-use ophobia_chain::chain::{Chain, BLOCK_REWARD};
+use ophobia_chain::chain::{BLOCK_REWARD, Chain};
 use ophobia_chain::consensus::{Consensus, ProofOfWork};
 use ophobia_chain::error::ChainError;
 use ophobia_chain::hash::merkle_root;
@@ -59,9 +59,16 @@ fn mempool_refuses_two_spends_of_one_output() {
     let (chain, alice) = funded();
     let bob = Account::new();
     let mut pool = Mempool::default();
-    pool.add(chain.ledger(), alice.pay(chain.ledger(), &bob.address(), 10, 1, 3).unwrap()).unwrap();
+    pool.add(
+        chain.ledger(),
+        alice.pay(chain.ledger(), &bob.address(), 10, 1, 3).unwrap(),
+    )
+    .unwrap();
     let again = alice.pay(chain.ledger(), &bob.address(), 11, 1, 3).unwrap();
-    assert_eq!(pool.add(chain.ledger(), again), Err(ChainError::DoubleSpend));
+    assert_eq!(
+        pool.add(chain.ledger(), again),
+        Err(ChainError::DoubleSpend)
+    );
 }
 
 #[test]
@@ -96,7 +103,10 @@ fn block_that_does_not_extend_the_tip_is_rejected() {
     let mut block = chain.mine(&alice.address(), vec![], 9).unwrap();
     block.header.prev_hash = [1; 32];
     reseal(&mut block);
-    assert_eq!(chain.add_block(block), Err(ChainError::BadBlock("does not extend the tip")));
+    assert_eq!(
+        chain.add_block(block),
+        Err(ChainError::BadBlock("does not extend the tip"))
+    );
 }
 
 #[test]
@@ -104,19 +114,27 @@ fn tampered_transactions_break_the_tx_root() {
     let (mut chain, alice) = funded();
     let mut block = chain.mine(&alice.address(), vec![], 9).unwrap();
     block.txs[0].fee = 1;
-    assert_eq!(chain.add_block(block), Err(ChainError::BadBlock("tx root mismatch")));
+    assert_eq!(
+        chain.add_block(block),
+        Err(ChainError::BadBlock("tx root mismatch"))
+    );
 }
 
 #[test]
 fn insufficient_work_is_rejected() {
     let alice = Account::new();
-    let mut strict = Chain::new(ProofOfWork { difficulty_bits: 40 });
+    let mut strict = Chain::new(ProofOfWork {
+        difficulty_bits: 40,
+    });
     // Mined at 8 bits over the strict chain's genesis: valid in every way but the work.
     let easy = Chain::new(POW);
     let mut block = easy.mine(&alice.address(), vec![], 1).unwrap();
     block.header.prev_hash = strict.tip().hash();
     reseal(&mut block);
-    assert_eq!(strict.add_block(block), Err(ChainError::BadBlock("insufficient proof of work")));
+    assert_eq!(
+        strict.add_block(block),
+        Err(ChainError::BadBlock("insufficient proof of work"))
+    );
 }
 
 #[test]
@@ -126,7 +144,10 @@ fn inflated_coinbase_is_rejected() {
     block.txs[0] = ophobia_chain::wallet::coinbase(&alice.address(), BLOCK_REWARD + 1).unwrap();
     block.header.tx_root = merkle_root(&block.txs);
     reseal(&mut block);
-    assert_eq!(chain.add_block(block), Err(ChainError::BadBlock("coinbase amount is not the reward")));
+    assert_eq!(
+        chain.add_block(block),
+        Err(ChainError::BadBlock("coinbase amount is not the reward"))
+    );
 }
 
 #[test]
@@ -136,5 +157,8 @@ fn block_without_coinbase_is_rejected() {
     block.txs.clear();
     block.header.tx_root = merkle_root(&block.txs);
     reseal(&mut block);
-    assert_eq!(chain.add_block(block), Err(ChainError::BadBlock("missing coinbase")));
+    assert_eq!(
+        chain.add_block(block),
+        Err(ChainError::BadBlock("missing coinbase"))
+    );
 }

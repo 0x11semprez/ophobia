@@ -35,7 +35,12 @@ pub fn key_image(secret: &Scalar) -> RistrettoPoint {
     secret * hash_to_point(&public)
 }
 
-fn challenge(message: &[u8; 32], l_key: &RistrettoPoint, l_image: &RistrettoPoint, l_amount: &RistrettoPoint) -> Scalar {
+fn challenge(
+    message: &[u8; 32],
+    l_key: &RistrettoPoint,
+    l_image: &RistrettoPoint,
+    l_amount: &RistrettoPoint,
+) -> Scalar {
     let mut bytes = b"ophobia/mlsag".to_vec();
     bytes.extend_from_slice(message);
     for p in [l_key, l_image, l_amount] {
@@ -93,22 +98,40 @@ pub fn sign(
         s_key[i] = Scalar::random(&mut OsRng);
         s_amount[i] = Scalar::random(&mut OsRng);
         let next = (i + 1) % n;
-        c[next] = step(message, &ring[i], &image, pseudo, &c[i], &s_key[i], &s_amount[i]);
+        c[next] = step(
+            message,
+            &ring[i],
+            &image,
+            pseudo,
+            &c[i],
+            &s_key[i],
+            &s_amount[i],
+        );
         i = next;
     }
     s_key[real] = alpha_key - c[real] * secret;
     s_amount[real] = alpha_amount - c[real] * z;
-    Signature { challenge: c[0], s_key, s_amount }
+    Signature {
+        challenge: c[0],
+        s_key,
+        s_amount,
+    }
 }
 
-pub fn verify(message: &[u8; 32], ring: &[Member], image: &RistrettoPoint, pseudo: &RistrettoPoint, sig: &Signature) -> bool {
+pub fn verify(
+    message: &[u8; 32],
+    ring: &[Member],
+    image: &RistrettoPoint,
+    pseudo: &RistrettoPoint,
+    sig: &Signature,
+) -> bool {
     let n = ring.len();
     if n == 0 || sig.s_key.len() != n || sig.s_amount.len() != n {
         return false;
     }
     let mut c = sig.challenge;
-    for i in 0..n {
-        c = step(message, &ring[i], image, pseudo, &c, &sig.s_key[i], &sig.s_amount[i]);
+    for ((member, s_key), s_amount) in ring.iter().zip(&sig.s_key).zip(&sig.s_amount) {
+        c = step(message, member, image, pseudo, &c, s_key, s_amount);
     }
     c == sig.challenge
 }
@@ -125,18 +148,29 @@ impl Signature {
     }
 
     pub fn from_bytes(bytes: &[u8]) -> Result<Self, ChainError> {
-        if bytes.len() < SCALAR || (bytes.len() - SCALAR) % (2 * SCALAR) != 0 {
+        if bytes.len() < SCALAR || !(bytes.len() - SCALAR).is_multiple_of(2 * SCALAR) {
             return Err(ChainError::Malformed);
         }
         let scalar = |chunk: &[u8]| {
-            Option::from(Scalar::from_canonical_bytes(chunk.try_into().unwrap())).ok_or(ChainError::Malformed)
+            Option::from(Scalar::from_canonical_bytes(chunk.try_into().unwrap()))
+                .ok_or(ChainError::Malformed)
         };
         let challenge = scalar(&bytes[..SCALAR])?;
         let n = (bytes.len() - SCALAR) / (2 * SCALAR);
         let rest = &bytes[SCALAR..];
-        let s_key = rest[..n * SCALAR].chunks(SCALAR).map(scalar).collect::<Result<_, _>>()?;
-        let s_amount = rest[n * SCALAR..].chunks(SCALAR).map(scalar).collect::<Result<_, _>>()?;
-        Ok(Self { challenge, s_key, s_amount })
+        let s_key = rest[..n * SCALAR]
+            .chunks(SCALAR)
+            .map(scalar)
+            .collect::<Result<_, _>>()?;
+        let s_amount = rest[n * SCALAR..]
+            .chunks(SCALAR)
+            .map(scalar)
+            .collect::<Result<_, _>>()?;
+        Ok(Self {
+            challenge,
+            s_key,
+            s_amount,
+        })
     }
 }
 
@@ -160,13 +194,22 @@ mod tests {
         for i in 0..n {
             let x = Scalar::random(&mut OsRng);
             let r = Scalar::random(&mut OsRng);
-            ring.push(Member { key: x * G, commitment: commit(50, &r) });
+            ring.push(Member {
+                key: x * G,
+                commitment: commit(50, &r),
+            });
             if i == real {
                 (secret, blinding) = (x, r);
             }
         }
         let pseudo_blinding = Scalar::random(&mut OsRng);
-        Fixture { ring, secret, z: blinding - pseudo_blinding, pseudo: commit(50, &pseudo_blinding), real }
+        Fixture {
+            ring,
+            secret,
+            z: blinding - pseudo_blinding,
+            pseudo: commit(50, &pseudo_blinding),
+            real,
+        }
     }
 
     #[test]
@@ -174,7 +217,13 @@ mod tests {
         for real in 0..4 {
             let f = fixture(4, real);
             let sig = sign(&[7; 32], &f.ring, f.real, &f.secret, &f.z, &f.pseudo);
-            assert!(verify(&[7; 32], &f.ring, &key_image(&f.secret), &f.pseudo, &sig));
+            assert!(verify(
+                &[7; 32],
+                &f.ring,
+                &key_image(&f.secret),
+                &f.pseudo,
+                &sig
+            ));
         }
     }
 
@@ -182,7 +231,13 @@ mod tests {
     fn wrong_message_fails() {
         let f = fixture(3, 1);
         let sig = sign(&[7; 32], &f.ring, f.real, &f.secret, &f.z, &f.pseudo);
-        assert!(!verify(&[8; 32], &f.ring, &key_image(&f.secret), &f.pseudo, &sig));
+        assert!(!verify(
+            &[8; 32],
+            &f.ring,
+            &key_image(&f.secret),
+            &f.pseudo,
+            &sig
+        ));
     }
 
     #[test]
@@ -190,7 +245,13 @@ mod tests {
         let f = fixture(3, 0);
         let forged = commit(51, &Scalar::random(&mut OsRng));
         let sig = sign(&[1; 32], &f.ring, f.real, &f.secret, &f.z, &forged);
-        assert!(!verify(&[1; 32], &f.ring, &key_image(&f.secret), &forged, &sig));
+        assert!(!verify(
+            &[1; 32],
+            &f.ring,
+            &key_image(&f.secret),
+            &forged,
+            &sig
+        ));
     }
 
     #[test]
@@ -213,7 +274,13 @@ mod tests {
         let f = fixture(3, 1);
         let sig = sign(&[3; 32], &f.ring, f.real, &f.secret, &f.z, &f.pseudo);
         let back = Signature::from_bytes(&sig.to_bytes()).unwrap();
-        assert!(verify(&[3; 32], &f.ring, &key_image(&f.secret), &f.pseudo, &back));
+        assert!(verify(
+            &[3; 32],
+            &f.ring,
+            &key_image(&f.secret),
+            &f.pseudo,
+            &back
+        ));
         assert!(Signature::from_bytes(&[0; 40]).is_err());
     }
 }

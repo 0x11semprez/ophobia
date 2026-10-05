@@ -38,16 +38,27 @@ impl Ledger {
 
     /// Picks up to `n` distinct outputs, never one of `exclude`, to pad a ring.
     pub fn decoys(&self, exclude: &[Hash], n: usize) -> Result<Vec<Hash>, ChainError> {
-        let pool: Vec<Hash> = self.order.iter().filter(|id| !exclude.contains(id)).copied().collect();
+        let pool: Vec<Hash> = self
+            .order
+            .iter()
+            .filter(|id| !exclude.contains(id))
+            .copied()
+            .collect();
         if pool.len() < n {
             return Err(ChainError::NotEnoughDecoys);
         }
-        Ok(pool.choose_multiple(&mut rand::thread_rng(), n).copied().collect())
+        Ok(pool
+            .choose_multiple(&mut rand::thread_rng(), n)
+            .copied()
+            .collect())
     }
 
     fn member(&self, id: &Hash) -> Result<Member, ChainError> {
         let output = self.outputs.get(id).ok_or(ChainError::UnknownRingMember)?;
-        Ok(Member { key: decompress(&output.one_time_key)?, commitment: decompress(&output.commitment)? })
+        Ok(Member {
+            key: decompress(&output.one_time_key)?,
+            commitment: decompress(&output.commitment)?,
+        })
     }
 
     /// Checks a spending transaction against the current state without changing it.
@@ -68,7 +79,11 @@ impl Ledger {
             {
                 return Err(ChainError::BadRing);
             }
-            let members = input.ring.iter().map(|id| self.member(id)).collect::<Result<Vec<_>, _>>()?;
+            let members = input
+                .ring
+                .iter()
+                .map(|id| self.member(id))
+                .collect::<Result<Vec<_>, _>>()?;
             let image = decompress(&input.key_image)?;
             let pseudo = decompress(&input.pseudo_commitment)?;
             let signature = Signature::from_bytes(&input.signature)?;

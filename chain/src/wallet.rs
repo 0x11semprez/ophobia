@@ -49,7 +49,10 @@ pub fn coinbase(to: &Address, amount: u64) -> Result<Tx, ChainError> {
 
 impl Account {
     pub fn new() -> Self {
-        Self { keys: Wallet::generate(), owned: Vec::new() }
+        Self {
+            keys: Wallet::generate(),
+            owned: Vec::new(),
+        }
     }
 
     pub fn address(&self) -> Address {
@@ -66,13 +69,21 @@ impl Account {
         self.owned.retain(|o| !spent.contains(&o.key_image));
 
         for (index, output) in tx.outputs.iter().enumerate() {
-            let Some(got) = self.keys.scan(&output.one_time_key, &output.ephemeral_key, &output.encrypted_amount, index as u64)
-            else {
+            let Some(got) = self.keys.scan(
+                &output.one_time_key,
+                &output.ephemeral_key,
+                &output.encrypted_amount,
+                index as u64,
+            ) else {
                 continue;
             };
             // The commitment, not the sender's word, decides what the output is worth.
-            let Ok(committed) = decompress(&output.commitment) else { continue };
-            let blinding = [got.blinding, Scalar::ZERO].into_iter().find(|b| commit(got.amount, b) == committed);
+            let Ok(committed) = decompress(&output.commitment) else {
+                continue;
+            };
+            let blinding = [got.blinding, Scalar::ZERO]
+                .into_iter()
+                .find(|b| commit(got.amount, b) == committed);
             let Some(blinding) = blinding else { continue };
             self.owned.push(Owned {
                 id: output.id(),
@@ -93,11 +104,20 @@ impl Account {
     /// Builds a transaction paying `amount` to `to`, sending any change back to this account.
     ///
     /// Spent outputs stay in the balance until a transaction spending them is scanned.
-    pub fn pay(&self, ledger: &Ledger, to: &Address, amount: u64, fee: u64, ring_size: usize) -> Result<Tx, ChainError> {
+    pub fn pay(
+        &self,
+        ledger: &Ledger,
+        to: &Address,
+        amount: u64,
+        fee: u64,
+        ring_size: usize,
+    ) -> Result<Tx, ChainError> {
         if !(2..=MAX_RING).contains(&ring_size) {
             return Err(ChainError::BadRing);
         }
-        let needed = amount.checked_add(fee).ok_or(ChainError::InsufficientFunds)?;
+        let needed = amount
+            .checked_add(fee)
+            .ok_or(ChainError::InsufficientFunds)?;
         let mut picked = Vec::new();
         let mut total = 0u64;
         for output in &self.owned {
@@ -131,7 +151,9 @@ impl Account {
         }
 
         // Pseudo blindings must sum to the output blindings for the amounts to balance.
-        let mut pseudo_blindings: Vec<Scalar> = (1..picked.len()).map(|_| Scalar::random(&mut OsRng)).collect();
+        let mut pseudo_blindings: Vec<Scalar> = (1..picked.len())
+            .map(|_| Scalar::random(&mut OsRng))
+            .collect();
         pseudo_blindings.push(out_blinding - pseudo_blindings.iter().sum::<Scalar>());
 
         let mut rings = Vec::new();
@@ -140,7 +162,10 @@ impl Account {
             let mut ids = ledger.decoys(&[spend.id], ring_size - 1)?;
             ids.push(spend.id);
             ids.shuffle(&mut OsRng);
-            let real = ids.iter().position(|id| *id == spend.id).expect("real output was just pushed");
+            let real = ids
+                .iter()
+                .position(|id| *id == spend.id)
+                .expect("real output was just pushed");
             rings.push((ids, real));
             inputs.push(Input {
                 key_image: spend.key_image,
@@ -150,7 +175,11 @@ impl Account {
             });
         }
 
-        let mut tx = Tx { inputs, outputs, fee };
+        let mut tx = Tx {
+            inputs,
+            outputs,
+            fee,
+        };
         let message = tx.signing_hash();
         for (i, spend) in picked.iter().enumerate() {
             let (ids, real) = &rings[i];
@@ -158,13 +187,17 @@ impl Account {
                 .iter()
                 .map(|id| {
                     let o = ledger.output(id).ok_or(ChainError::UnknownRingMember)?;
-                    Ok(Member { key: decompress(&o.one_time_key)?, commitment: decompress(&o.commitment)? })
+                    Ok(Member {
+                        key: decompress(&o.one_time_key)?,
+                        commitment: decompress(&o.commitment)?,
+                    })
                 })
                 .collect::<Result<Vec<_>, ChainError>>()?;
             debug_assert_eq!(members[*real].key, spend.secret_key * G);
             let pseudo = decompress(&tx.inputs[i].pseudo_commitment)?;
             let z = spend.blinding - pseudo_blindings[i];
-            tx.inputs[i].signature = ring::sign(&message, &members, *real, &spend.secret_key, &z, &pseudo).to_bytes();
+            tx.inputs[i].signature =
+                ring::sign(&message, &members, *real, &spend.secret_key, &z, &pseudo).to_bytes();
         }
         Ok(tx)
     }

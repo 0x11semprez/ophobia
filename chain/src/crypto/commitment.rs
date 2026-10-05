@@ -15,7 +15,9 @@ pub fn commit(value: u64, blinding: &Scalar) -> RistrettoPoint {
 }
 
 pub fn decompress(bytes: &[u8; 32]) -> Result<RistrettoPoint, ChainError> {
-    CompressedRistretto(*bytes).decompress().ok_or(ChainError::Malformed)
+    CompressedRistretto(*bytes)
+        .decompress()
+        .ok_or(ChainError::Malformed)
 }
 
 /// True when inputs commit to exactly outputs plus the fee.

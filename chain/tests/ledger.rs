@@ -1,6 +1,6 @@
 use ophobia_chain::error::ChainError;
 use ophobia_chain::ledger::Ledger;
-use ophobia_chain::wallet::{coinbase, Account};
+use ophobia_chain::wallet::{Account, coinbase};
 
 /// A ledger where `alice` owns three coinbase outputs of 100 and `bob` one of 100.
 fn setup() -> (Ledger, Account, Account) {
@@ -89,13 +89,19 @@ fn duplicate_ring_member_is_rejected() {
 #[test]
 fn cannot_spend_more_than_owned() {
     let (ledger, alice, bob) = setup();
-    assert_eq!(alice.pay(&ledger, &bob.address(), 301, 0, 3).err(), Some(ChainError::InsufficientFunds));
+    assert_eq!(
+        alice.pay(&ledger, &bob.address(), 301, 0, 3).err(),
+        Some(ChainError::InsufficientFunds)
+    );
 }
 
 #[test]
 fn ring_needs_enough_decoys() {
     let (ledger, alice, bob) = setup();
-    assert_eq!(alice.pay(&ledger, &bob.address(), 10, 1, 16).err(), Some(ChainError::NotEnoughDecoys));
+    assert_eq!(
+        alice.pay(&ledger, &bob.address(), 10, 1, 16).err(),
+        Some(ChainError::NotEnoughDecoys)
+    );
 }
 
 #[test]

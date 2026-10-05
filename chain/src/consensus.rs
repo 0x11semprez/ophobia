@@ -49,12 +49,20 @@ mod tests {
     use super::*;
 
     fn header() -> Header {
-        Header { height: 1, prev_hash: [0; 32], tx_root: [0; 32], timestamp: 1, nonce: 0 }
+        Header {
+            height: 1,
+            prev_hash: [0; 32],
+            tx_root: [0; 32],
+            timestamp: 1,
+            nonce: 0,
+        }
     }
 
     #[test]
     fn sealed_header_verifies() {
-        let pow = ProofOfWork { difficulty_bits: 10 };
+        let pow = ProofOfWork {
+            difficulty_bits: 10,
+        };
         let mut h = header();
         pow.seal(&mut h);
         assert!(pow.verify(&h).is_ok());
@@ -65,7 +73,13 @@ mod tests {
         let mut h = header();
         ProofOfWork { difficulty_bits: 4 }.seal(&mut h);
         // 4 leading zero bits is not 24, except with probability 2^-20 for this nonce.
-        assert!(ProofOfWork { difficulty_bits: 24 }.verify(&h).is_err());
+        assert!(
+            ProofOfWork {
+                difficulty_bits: 24
+            }
+            .verify(&h)
+            .is_err()
+        );
     }
 
     #[test]

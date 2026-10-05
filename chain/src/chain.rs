@@ -23,18 +23,30 @@ pub struct Chain<C: Consensus> {
 
 fn genesis() -> Block {
     Block {
-        header: Header { height: 0, prev_hash: [0; 32], tx_root: merkle_root(&[]), timestamp: 0, nonce: 0 },
+        header: Header {
+            height: 0,
+            prev_hash: [0; 32],
+            tx_root: merkle_root(&[]),
+            timestamp: 0,
+            nonce: 0,
+        },
         txs: Vec::new(),
     }
 }
 
 impl<C: Consensus> Chain<C> {
     pub fn new(consensus: C) -> Self {
-        Self { blocks: vec![genesis()], ledger: Ledger::default(), consensus }
+        Self {
+            blocks: vec![genesis()],
+            ledger: Ledger::default(),
+            consensus,
+        }
     }
 
     pub fn tip(&self) -> &Block {
-        self.blocks.last().expect("chain always holds the genesis block")
+        self.blocks
+            .last()
+            .expect("chain always holds the genesis block")
     }
 
     pub fn height(&self) -> u64 {
@@ -67,7 +79,10 @@ impl<C: Consensus> Chain<C> {
         }
         self.consensus.verify(header)?;
 
-        let (base, spends) = block.txs.split_first().ok_or(ChainError::BadBlock("missing coinbase"))?;
+        let (base, spends) = block
+            .txs
+            .split_first()
+            .ok_or(ChainError::BadBlock("missing coinbase"))?;
         if spends.len() > MAX_BLOCK_TXS {
             return Err(ChainError::BadBlock("too many transactions"));
         }
@@ -76,10 +91,14 @@ impl<C: Consensus> Chain<C> {
         let mut fees = 0u64;
         for tx in spends {
             ledger.validate_tx(tx)?;
-            fees = fees.checked_add(tx.fee).ok_or(ChainError::BadBlock("fee overflow"))?;
+            fees = fees
+                .checked_add(tx.fee)
+                .ok_or(ChainError::BadBlock("fee overflow"))?;
             ledger.apply_tx(tx);
         }
-        let reward = BLOCK_REWARD.checked_add(fees).ok_or(ChainError::BadBlock("fee overflow"))?;
+        let reward = BLOCK_REWARD
+            .checked_add(fees)
+            .ok_or(ChainError::BadBlock("fee overflow"))?;
         check_coinbase(base, reward)?;
         ledger.apply_tx(base);
         Ok(ledger)
@@ -92,7 +111,12 @@ impl<C: Consensus> Chain<C> {
     }
 
     /// Mines the next block paying `miner`, keeping the candidates that still validate in order.
-    pub fn mine(&self, miner: &Address, candidates: Vec<Tx>, timestamp: u64) -> Result<Block, ChainError> {
+    pub fn mine(
+        &self,
+        miner: &Address,
+        candidates: Vec<Tx>,
+        timestamp: u64,
+    ) -> Result<Block, ChainError> {
         let mut scratch = self.ledger.clone();
         let mut spends = Vec::new();
         let mut fees = 0u64;

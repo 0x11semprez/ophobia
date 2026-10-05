@@ -30,7 +30,13 @@ pub fn verify(commitment: &[u8; 32], proof: &[u8]) -> bool {
     };
     let mut transcript = Transcript::new(DOMAIN);
     proof
-        .verify_single(&BP_GENS, &gens(), &mut transcript, &CompressedRistretto(*commitment), BITS)
+        .verify_single(
+            &BP_GENS,
+            &gens(),
+            &mut transcript,
+            &CompressedRistretto(*commitment),
+            BITS,
+        )
         .is_ok()
 }
 
