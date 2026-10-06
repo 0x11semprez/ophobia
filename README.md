@@ -52,6 +52,29 @@ This project is **strictly academic and research-oriented**. The full implementa
 
 The mixnet prototype is designed after the **Loopix** paper: [*The Loopix Anonymity System*](https://www.usenix.org/conference/usenixsecurity17/technical-sessions/presentation/piotrowska) (Piotrowska, Hayes, Elahi, Meiser, Danezis, USENIX Security 2017). Loopix provides the base architecture: a stratified topology of mix nodes, Poisson-distributed per-hop delays, and cover traffic (loop and drop messages) to resist a global passive adversary.
 
+## Layout
+
+- `cmd/`, `internal/`: the Go mixnet (clients, providers, mixnodes, Poisson mixing, cover traffic).
+- `cmd/bridge`, `internal/bridge`: local TCP bridge exposing each mixnet client to external programs.
+- `chain/`: Rust prototype whose nodes gossip over the bridge.
+
 ## Status
 
-Early-stage research. Scope is now **the mixnet only**; the blockchain, cryptographic ledger and diffusion layers are out of scope.
+Early-stage research. The deliverable is the mixnet. `chain/` is a throwaway prototype (ring signatures, PoW, mempool, gossiping nodes) used as a realistic workload: its nodes exchange blocks and transactions through the mixnet over a local TCP bridge. The cryptographic ledger and diffusion layers remain out of scope as products.
+
+## Running
+
+Start the mixnet and its bridge (one terminal):
+
+    go run ./cmd/bridge
+
+Run three chain nodes over it (another terminal):
+
+    cd chain && cargo run --example mixnet
+
+Expected: every node ends at the same height and tip.
+
+Tests:
+
+    go test -race ./...
+    cd chain && cargo test
