@@ -1,4 +1,4 @@
-//! Three chain nodes gossip over the Go mixnet; start `go run ./cmd/bridge` first.
+//! Three chain nodes gossip over the Go mixnet; start `go run ./cmd/bridge` from mixnet/ first.
 use std::thread::sleep;
 use std::time::{Duration, Instant};
 

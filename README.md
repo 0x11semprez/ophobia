@@ -54,8 +54,8 @@ The mixnet prototype is designed after the **Loopix** paper: [*The Loopix Anonym
 
 ## Layout
 
-- `cmd/`, `internal/`: the Go mixnet (clients, providers, mixnodes, Poisson mixing, cover traffic).
-- `cmd/bridge`, `internal/bridge`: local TCP bridge exposing each mixnet client to external programs.
+- `mixnet/`: the Go mixnet (clients, providers, mixnodes, Poisson mixing, cover traffic).
+- `mixnet/cmd/bridge`, `mixnet/internal/bridge`: local TCP bridge exposing each mixnet client to external programs.
 - `chain/`: Rust prototype whose nodes gossip over the bridge.
 
 ## Status
@@ -66,7 +66,7 @@ Early-stage research. The deliverable is the mixnet. `chain/` is a throwaway pro
 
 Start the mixnet and its bridge (one terminal):
 
-    go run ./cmd/bridge
+    cd mixnet && go run ./cmd/bridge
 
 Run three chain nodes over it (another terminal):
 
@@ -76,5 +76,5 @@ Expected: every node ends at the same height and tip.
 
 Tests:
 
-    go test -race ./...
+    cd mixnet && go test -race ./...
     cd chain && cargo test
