@@ -25,6 +25,8 @@ pub enum ChainError {
     Empty,
     #[error("bad block: {0}")]
     BadBlock(&'static str),
+    #[error("transport: {0}")]
+    Transport(String),
     #[error("encoding: {0}")]
     Encoding(String),
 }

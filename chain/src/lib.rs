@@ -1,3 +1,4 @@
+pub mod bridge;
 pub mod chain;
 pub mod consensus;
 pub mod crypto;
