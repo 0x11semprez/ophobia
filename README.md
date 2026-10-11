@@ -64,17 +64,22 @@ Early-stage research. The deliverable is the mixnet. `chain/` is a throwaway pro
 
 ## Running
 
+Install the `ophobia` command once (links it into `/usr/local/bin`):
+
+    ./ophobia install
+
 Start the mixnet and its bridge (one terminal):
 
-    cd mixnet && go run ./cmd/bridge
+    ophobia bridge
 
 Run three chain nodes over it (another terminal):
 
-    cd chain && cargo run --example mixnet
+    ophobia demo
 
 Expected: every node ends at the same height and tip.
 
+Other commands: `ophobia build`, `ophobia test`, `ophobia check`, `ophobia fmt`, `ophobia clean`. Run `ophobia` alone to list them.
+
 Tests:
 
-    cd mixnet && go test -race ./...
-    cd chain && cargo test
+    ophobia test

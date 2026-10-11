@@ -1,0 +1,44 @@
+#!/bin/sh
+# ophobia: project commands. Usage: ./ophobia <command>
+set -e
+self=$(readlink "$0" || echo "$0")
+cd "$(dirname "$self")"
+
+case "$1" in
+build)
+	(cd mixnet && go build ./...)
+	(cd chain && cargo build --release) ;;
+bridge)
+	cd mixnet && go run ./cmd/bridge ;;
+demo)
+	cd chain && cargo run --release --example mixnet ;;
+chain-demo)
+	cd chain && cargo run --release ;;
+test)
+	(cd mixnet && go test -race ./...)
+	(cd chain && cargo test) ;;
+check)
+	(cd mixnet && test -z "$(gofmt -l .)" && go vet ./...)
+	(cd chain && cargo fmt --check && cargo clippy --all-targets -- -D warnings)
+	"$0" test ;;
+fmt)
+	(cd mixnet && gofmt -w .)
+	(cd chain && cargo fmt) ;;
+clean)
+	cd chain && cargo clean ;;
+install)
+	dst=/usr/local/bin/ophobia
+	ln -sf "$PWD/ophobia" "$dst" 2>/dev/null || sudo ln -sf "$PWD/ophobia" "$dst"
+	echo "installed: run 'ophobia <command>' from anywhere" ;;
+*)
+	echo "usage: ophobia <command>"
+	echo "  build       build mixnet and chain"
+	echo "  bridge      start the mixnet and its TCP bridge"
+	echo "  demo        run 3 chain nodes over the mixnet (needs bridge running)"
+	echo "  chain-demo  run the chain demo in memory"
+	echo "  test        run all tests"
+	echo "  check       fmt + vet + clippy + tests (CI checks)"
+	echo "  fmt         format Go and Rust code"
+	echo "  clean       remove build artifacts"
+	echo "  install     make 'ophobia' available everywhere (once)" ;;
+esac
